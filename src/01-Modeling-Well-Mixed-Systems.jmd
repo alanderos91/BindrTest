@@ -13,7 +13,7 @@ We will work with a model of gene regulation in prokaryotes taken from the text:
 > Wilkinson, D. J. (2006) *Stochastic Modelling for Systems Biology*.
 > 1st ed., Chapman & Hall / CRC, Boca Raton, FL.
 
-![wilkinson2006_pg14.png](wilkinson2006_pg14.png)
+![wilkinson2006_pg14.png](figures/wilkinson2006_pg14.png)
 
 Here dimers of a protein coded by a gene repress their own transcription by binding a regulatory region lying between the gene and its promoter.
 The flow of information can be summarized by $8$ biochemical reactions involving $5$ species:

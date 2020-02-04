@@ -36,7 +36,7 @@ There are three key steps:
 
 The `@def_reactions` macro transforms user input into an intermediate representation that encapsulates interactions in a model.
 An *interaction* is structured as
-```{julia; eval = false}
+```
 A + B --> C + D, k
 ```
 which reads as "`A` interacts with `B` to produce `C` and `D` with rate `k`".
