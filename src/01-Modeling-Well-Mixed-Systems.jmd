@@ -114,7 +114,7 @@ reaction_list(network)[:binding]
 The `simulate` function works directly with `Network` objects.
 Note that a simulation may terminate early if the cumulative intensity reaches 0 (e.g. reaching an absorbing state).
 
-```{julia; eval = false}
+```
 simulate(network::Network, algname::SimulationAlgorithm;
             [tfinal = 0.0],
             [rates_cache = HasRates],
