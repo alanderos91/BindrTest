@@ -4,7 +4,7 @@ This repo contains BioSimulator tutorials presented at the inaugural Lange's Sym
 
 ## Run on Binder
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://github.com/alanderos91/LangeSymposium-BioSimulator/master)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/alanderos91/LangeSymposium-BioSimulator/master)
 
 ## Related Publications
 
