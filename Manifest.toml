@@ -22,9 +22,9 @@ uuid = "b99e7846-7c00-51b0-8f62-c81ae34c0232"
 version = "0.5.8"
 
 [[BioSimulator]]
-deps = ["BenchmarkTools", "Combinatorics", "DataStructures", "IteratorInterfaceExtensions", "LinearAlgebra", "MacroTools", "Plots", "PoissonRandom", "Random", "RecipesBase", "RecursiveArrayTools", "SparseArrays", "StaticArrays", "Statistics", "StatsBase", "TableTraits"]
-git-tree-sha1 = "74a411987c1881d4682f4c8348b53ad211287418"
-repo-rev = "9f47b29"
+deps = ["BenchmarkTools", "Combinatorics", "DataStructures", "IteratorInterfaceExtensions", "LinearAlgebra", "MacroTools", "PoissonRandom", "Random", "RecipesBase", "RecursiveArrayTools", "SparseArrays", "StaticArrays", "Statistics", "StatsBase", "TableTraits"]
+git-tree-sha1 = "74a9a4062b3d05e8a8e96b02f0a3ff35280d6605"
+repo-rev = "v0.9.3"
 repo-url = "https://github.com/alanderos91/BioSimulator.jl.git"
 uuid = "6aabf0a6-ec0e-58c4-b8bf-f645d5ac4ee8"
 version = "0.9.3-beta"
@@ -54,10 +54,10 @@ uuid = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
 version = "1.0.0"
 
 [[Compat]]
-deps = ["Base64", "Dates", "DelimitedFiles", "Distributed", "InteractiveUtils", "LibGit2", "Libdl", "LinearAlgebra", "Markdown", "Mmap", "Pkg", "Printf", "REPL", "Random", "Serialization", "SharedArrays", "Sockets", "SparseArrays", "Statistics", "Test", "UUIDs", "Unicode"]
-git-tree-sha1 = "3819f476b6b37ef8ea837070ed831b4ebadfa1e9"
+deps = ["Base64", "Dates", "DelimitedFiles", "Distributed", "InteractiveUtils", "LibGit2", "Libdl", "LinearAlgebra", "Markdown", "Mmap", "Pkg", "Printf", "REPL", "Random", "SHA", "Serialization", "SharedArrays", "Sockets", "SparseArrays", "Statistics", "Test", "UUIDs", "Unicode"]
+git-tree-sha1 = "a4839bd26e3e7f4869a4cf6c31f9f93f47aac7c5"
 uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
-version = "3.2.0"
+version = "3.5.0"
 
 [[Contour]]
 deps = ["LinearAlgebra", "StaticArrays", "Test"]
@@ -213,9 +213,9 @@ version = "1.0.1"
 
 [[PlotUtils]]
 deps = ["Colors", "Dates", "Printf", "Random", "Reexport"]
-git-tree-sha1 = "22bd7d0a1f4665d66317d6c89a57f6bba9f2560d"
+git-tree-sha1 = "a146cb72ec962aec81d478de49d1011db06dd754"
 uuid = "995b91a9-d308-5afd-9ec6-746e21dbc043"
-version = "0.6.2"
+version = "0.6.3"
 
 [[Plots]]
 deps = ["Base64", "Contour", "Dates", "FFMPEG", "FixedPointNumbers", "GR", "GeometryTypes", "JSON", "LinearAlgebra", "Measures", "NaNMath", "Pkg", "PlotThemes", "PlotUtils", "Printf", "REPL", "Random", "RecipesBase", "Reexport", "Requires", "Showoff", "SparseArrays", "Statistics", "StatsBase", "UUIDs"]
@@ -317,9 +317,9 @@ uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [[StatsBase]]
 deps = ["DataAPI", "DataStructures", "LinearAlgebra", "Missings", "Printf", "Random", "SortingAlgorithms", "SparseArrays", "Statistics"]
-git-tree-sha1 = "c53e809e63fe5cf5de13632090bc3520649c9950"
+git-tree-sha1 = "be5c7d45daa449d12868f4466dbf5882242cf2d9"
 uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
-version = "0.32.0"
+version = "0.32.1"
 
 [[TableTraits]]
 deps = ["IteratorInterfaceExtensions"]
