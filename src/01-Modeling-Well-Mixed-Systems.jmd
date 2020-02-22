@@ -20,12 +20,12 @@ The flow of information can be summarized by $8$ biochemical reactions involving
 
 $$
 \begin{eqnarray*}
-\mathrm{gene_{on}} + P_{2} &\iff& \mathrm{gene_{off}} & \text{binding/unbinding} \\
-\mathrm{gene_{on}} &\longrightarrow& \mathrm{gene} + \mathrm{RNA} & \text{transcription} \\
-\mathrm{RNA} &\longrightarrow& \mathrm{RNA} + P & \text{translation} \\
-P + P &\iff& P_{2} & \text{dimerization/dissociaton} \\
-\mathrm{RNA} &\longrightarrow& \emptyset & \text{mRNA degradation} \\
-\mathrm{P} &\longrightarrow& \emptyset & \text{protein degradation}
+\mathrm{gene_{on}} + \mathrm{dimer} &\iff& \mathrm{gene_{off}} & \text{binding/unbinding} \\
+\mathrm{gene_{on}} &\longrightarrow& \mathrm{gene} + \mathrm{mRNA} & \text{transcription} \\
+\mathrm{mRNA} &\longrightarrow& \mathrm{mRNA} + \mathrm{monomer} & \text{translation} \\
+\mathrm{monomer} + \mathrm{monomer} &\iff& \mathrm{dimer} & \text{dimerization/dissociaton} \\
+\mathrm{mRNA} &\longrightarrow& \emptyset & \text{mRNA degradation} \\
+\mathrm{monomer} &\longrightarrow& \emptyset & \text{protein degradation}
 \end{eqnarray*}
 $$
 
@@ -34,14 +34,14 @@ We each reaction's total rate below, assuming mass action kinetics:
 
 | reaction            | order | rate constant | kinetic law |
 | -------------------:|:-----:|:-------------:| ----------- |
-| binding             | 2     | $k_{1}$       | $k_{1} \cdot \mathrm{gene_{on}} \cdot P_{2}$ |
+| binding             | 2     | $k_{1}$       | $k_{1} \cdot \mathrm{gene_{on}} \cdot \mathrm{dimer}$ |
 | unbinding           | 1     | $k_{2}$       | $k_{2} \cdot \mathrm{gene_{off}}$ |
 | transcription       | 1     | $k_{3}$       | $k_{3} \cdot \mathrm{gene_{on}}$ |
-| translation         | 1     | $k_{4}$       | $k_{4} \cdot \mathrm{RNA}$ |
-| dimerization        | 2     | $k_{5}$       | $k_{5} \cdot \binom{P}{2}$ |
-| dissociation        | 1     | $k_{6}$       | $k_{6} \cdot P_{2}$ |
-| mRNA degradation    | 1     | $k_{7}$       | $k_{7} \cdot RNA$ |
-| protein degradation | 1     | $k_{8}$       | $k_{8} \cdot P$ |
+| translation         | 1     | $k_{4}$       | $k_{4} \cdot \mathrm{mRNA}$ |
+| dimerization        | 2     | $k_{5}$       | $k_{5} \cdot \binom{\mathrm{monomer}}{2}$ |
+| dissociation        | 1     | $k_{6}$       | $k_{6} \cdot \mathrm{dimer}$ |
+| mRNA degradation    | 1     | $k_{7}$       | $k_{7} \cdot \mathrm{mRNA}$ |
+| protein degradation | 1     | $k_{8}$       | $k_{8} \cdot \mathrm{monomer}$ |
 
 ### Model specification
 
@@ -128,7 +128,7 @@ See the [documentation](https://alanderos91.github.io/BioSimulator.jl/dev/man/al
 - Direct methods: `Direct()`, `EnhancedDirect()`, `SortingDirect()`
 - First reaction methods: `FirstReaction()`, `NextReaction()`
 - Rejection methods: `RejectionSSA()`
-- Pure $\tau$0leaping methods: `TauLeapingDG2001()`, `TauLeapingDGLP2003()`, `StepAnticipation()`
+- Pure $\tau$-leaping methods: `TauLeapingDG2001()`, `TauLeapingDGLP2003()`, `StepAnticipation()`
 - Hybrid $\tau$-leaping: `HybridSAL()`
 
 #### Keyword arguments
@@ -137,7 +137,7 @@ See the [documentation](https://alanderos91.github.io/BioSimulator.jl/dev/man/al
 - `rates_cache`: Indicates the type of information stored in a rates cache. If `HasRates` is chosen, store the reaction rates. If `HasSums` is chosen, store partial sums of the rates. This effectively toggles between linear and binary searches, provided the algorithm supports the option.
 - `save_points`: An indexable collection indicating time points to sample and record system state. The default `nothing` forces saving after every reaction event (expensive).
 
-We can generate a *single* realization of the process as follows (`@time` is used to roughly measure performance):
+We can generate a *single* realization of the process as follows (`@time` is used to measure performance):
 
 ```{julia}
 @time simulate(network, Direct(), tfinal = 10.0);
@@ -174,7 +174,7 @@ trajectory = @time simulate(state, model, algorithm, tfinal = tfinal)
 
 print("compute time: ")
 trajectory = @time simulate(state, model, algorithm, tfinal = tfinal)
-println("number of event in a single trajectory: ", length(trajectory))
+println("number of events in a single trajectory: ", length(trajectory))
 
 # generate an ensemble
 @time ensemble = [simulate(state, model, algorithm,
@@ -189,7 +189,7 @@ println("number of event in a single trajectory: ", length(trajectory))
 The output of a single simulation is a `SamplePath` object.
 It is a *recursive array* (thanks to [RecursiveArrayTools](https://github.com/JuliaDiffEq/RecursiveArrayTools.jl)) that represents the state of a process $X_{t_{k}}$ at each time point $t_{k}$.
 
-Recall the ordering ($\mathrm{gene_{on}}$, $\mathrm{gene_{off}}$, $\mathrm{RNA}$, $P$, and $P_{2}$) we used in specifying our negative regulation model.
+Recall the ordering ($\mathrm{gene_{on}}$, $\mathrm{gene_{off}}$, $\mathrm{mRNA}$, $\mathrm{monomer}$, and $\mathrm{dimer}$) we used in specifying our negative regulation model.
 This ordering is preserved internally and throughout the following examples.
 
 Access the $k$-th recorded state its index:
@@ -287,7 +287,7 @@ rename!(df, [:trial, :time, :gene_on, :gene_off, :mRNA, :monomer, :dimer])
 last(df, 10)
 ```
 
-The DataFrames documentation has examples on [data manipulation](https://juliadata.github.io/DataFrames.jl/stable/man/querying_frameworks/) and [import/export](https://juliadata.github.io/DataFrames.jl/stable/man/getting_started/#Importing-and-Exporting-Data-(I/O)-1)
+The DataFrames documentation has examples on [data manipulation and import/export](https://juliadata.github.io/DataFrames.jl/stable/man/querying_frameworks/).
 
 #### Plotting a SamplePath
 
@@ -302,7 +302,7 @@ gr(format = :png, grid = false) # you can set default options for the plotting b
 plot(trajectory)
 ```
 
-Unfortunately, this is not terribly useful yet.
+This is not terribly useful yet.
 The axes are not labeled and it is not clear what each trajectory represents.
 Fortunately, we can fix these issues using the keyword arguments to the `plot` function.
 
@@ -319,7 +319,7 @@ plot(trajectory,
     label = species_labels)
 ```
 
-Next we need to fix crowding.
+Next we need to fix the crowding.
 We have a couple of choices for presenting the trajectories.
 
 ##### Option 1: Split each species into separate subfigures
@@ -430,41 +430,99 @@ plot(ensemble, summary = :phase,
 
 ## Exercises
 
-### Example: First-passage problems
+#### Using the modeling interface
+
+This example draws from a mathematical model of stem-like cancer cells.
+
+**Abstract**
+
+> Trastuzumab dramatically improves survival in breast cancer patients whose tumor overexpresses HER2.
+> A subpopulation of cells in human breast tumors has been identified with characteristics of cancer stem cells.
+> These breast cancer stem-like cells (BCSCs) rely on HER2 signaling for self-renewal, suggesting that HER2-targeted therapy targets BCSCs even when the bulk of the tumor does not overexpress HER2.
+> In order to guide clinical trials examining HER2-targeted therapy in the adjuvant setting, we propose a mathematical model to examine BCSC population dynamics and predict optimal duration of therapy.
+
+Riley, L., Zhou, H., Lange, K., Sinsheimer, J.S., Sehl, M.E. (2012). Determining Duration of HER2-Targeted Therapy Using Stem Cell Extinction Models. *PLoS One*, 7(12), e46613. https://doi.org/10.1371/journal.pone.0046613
+
+In this model, breast cancer stem-like cells (BCSCs) sustain a population of partially differentiated tumor cells (TCs) representing the bulk of the tumor population.
+Four mechanisms are modeled: symmetric self-renewal, asymmetric cell division, differentiation, and stem cell plasticity.
+The following rules define a linear birth-death process defining the underlying mathematical model:
+
+$$
+\begin{eqnarray*}
+    \mathrm{BCSC} &\longrightarrow& 2 \mathrm{BCSC}, \beta_{\mathrm{BCSC}} \\
+    \mathrm{BCSC} &\longrightarrow& 2 \mathrm{TC}, \rho_{1} \\
+    \mathrm{BCSC} &\longrightarrow& \mathrm{BCSC} + \mathrm{TC}, \rho_{2} \\
+    \mathrm{BCSC} &\longrightarrow& \emptyset, \delta_{\mathrm{BCSC}} \\
+    \mathrm{TC} &\longrightarrow& \emptyset, \delta_{\mathrm{TC}} \\
+    \mathrm{TC} &\longrightarrow& \mathrm{BCSC}, \phi
+\end{eqnarray*}
+$$
+
+Using the following function as a template, use the modeling interface to implement the BCSC model.
+It should return a `Network` object.
+
+Hint: Remember that 'reactants' and 'products' are separated by the `-->` symbol.
 
 ```{julia}
-simdata = [simulate(state, model, algorithm, tfinal = 100.0) for _ in 1:100]
+"""
+Create an instance of the BCSC model.
+Event rates are assumed to be in unit of cell^-1 * day^-1.
+Default parameter values correspond to the adjuvant setting.
 
-hitting_time = zeros(length(simdata))
+#### Keyword Arguments
 
-for i in eachindex(simdata)
-    # retrieve the data for realization i
-    xw = simdata[i]
+* `x_initial`: Initial conditions given as (BCSC, TC).
+* `k`: Event rates given as (β_BCSC, ρ_1, ρ_2, δ_BCSC, δ_TC, φ)
+"""
+function bcscdiff(;
+    x_initial = [100, 9900],
+    k = [0.2, 0.2, 1.6, 0.13, 0.11, 1e-4])
+    #
+    # initialize Network
 
-    # find the index k such that all genes are blocked
-    k = findfirst(isequal(0), xw[1, :])
+    # define system Species
 
-    # record the hitting time
-    hitting_time[i] = k == nothing ? Inf : xw.t[k]
+    # define system Reactions
+
+    # return Network object
 end
-
-mean(hitting_time), std(hitting_time)
 ```
 
-Compute the probability $\Pr(X_{4}(t) > 20)$ at $t = 25$ using the estimator $\sum_{n} 1\left\{X_{4}^{(n)}(t) > 20 \right\}$
+#### Runing a simulation study
+
+Using the function defined above, create an instance of the BCSC model.
+Pass it to the `parse_model` function.
+The remaining exercises will re-use `state` and `model` created below.
 
 ```{julia}
-simdata = [simulate(state, model, algorithm, tfinal = 26.0, save_points = [0.0, 25.0]) for _ in 1:5*10^3]
-
-indicator = zeros(length(simdata))
-
-for i in eachindex(simdata)
-    # retrieve the data for realization i
-    xw = simdata[i]
-
-    # record the hitting time
-    indicator[i] = xw[4, end] > 20
-end
-
-mean(indicator), std(indicator)
+state, model = parse_model()
 ```
+
+Try running a single simulation for 1 year and plot its trajectory over time.
+Both the BCSC and TC populations should be driven to extinction under the default parameter values.
+
+```{julia}
+
+```
+
+Collect data from $n=1000$ realizations of the stochastic process over a year.
+Plot the mean number of BCSCs and TCs over time.
+Note that the two populations are on different scales.
+Use the `save_points` option to avoid recording data after every event.
+
+```{julia}
+sample_time_points = range(0.0, 365.0, step = 5.0)
+
+```
+
+### First-passage problems
+
+Use the data from your simulation to estimate the probability of extinction after 1 year in (i) the BCSC population, (ii) the TC population, and (iii) the total population.
+
+Hint: Use the estimator $\sum_{k=1}^{n} 1(X_{k}(t) = 0)$.
+
+```{julia}
+
+```
+
+How can you modify your simulation to estimate the probablity of extinction?

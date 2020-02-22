@@ -245,3 +245,67 @@ plot(trajectory.t, population,
     ylabel = "count",
     label = ["fox" "rabbit"])
 ```
+
+### Exercises
+
+The predator-prey model we defined reproduces the familiar pattern from the Lotka-Volterra equations.
+However, the non-trivial steady-state has more foxes than rabbits under many parameter regimes.
+Conversion of biomass from rabbit to fox is instantaneous in both the deterministic and stochastic models.
+Unfortunately, introducing a rule of the form `Fox + 0 --> Fox + Fox` breaks resource dependence.
+
+One way to introduce a delay between resource consumption and reproduction is to split foxes into two subpopulations of malnourished and healthy individuals.
+Modify the rule set so that only healthy individuals are able to reproduce.
+
+```{julia}
+# 1. modify the rule set
+base_model = @def_reactions begin
+    Fox + 0 --> 0 + Fox, α1
+    Rabbit + 0 --> 0 + Rabbit, α2
+    Rabbit + 0 --> Rabbit + Rabbit, β
+    Fox + Rabbit --> Fox + Fox, γ
+    Rabbit --> 0, δ1
+    Fox --> 0, δ2
+    X --> 0, not_used
+end α1 α2 β γ δ1 δ2 not_used
+
+# 2. introduce new parameters as needed
+params = [α1, α2, β, γ, δ1, δ2, 0.0]
+
+# 3. generate the full model based on nearest-neighbor interactions
+model = @enumerate_with_sclass base_model VonNeumann() 2 params
+
+# 4. define an initial configuration with healthy foxes and rabbits
+
+F_healthy = "Fox1"  # symbol for healthy foxes
+F_hungry  = "Fox2"  # symbol for malnourished foxes
+R  = "Rabbit"       # symbol for rabbits
+boundary = "X"      # symbol for boundary
+
+# be sure keep definition order consistent
+type_list = Dict(
+    1 => F_healthy,
+    2 => F_hungry,
+    3 => R,
+    4 => boundary)
+
+xlim = (1,100) # limits for x coordinates
+ylim = (1,100) # limits for y coordinates
+density = 0.2
+number_boundary = 2*(xlim[2] - xlim[1] + 1) + 2*(ylim[2] - ylim[1])
+
+# generate initial configuration
+coord = generate_random_2Dpoints(xlim, ylim, density, boundary = true)
+types = rand([F_healthy, R], size(coord, 2) - number_boundary)
+types = [types; [boundary for _ in 1:400]]
+state = Lattice(coord, types,
+    nbhood = VonNeumann(),
+    type_list = type_list)
+
+plot(state)
+```
+
+Simulate your model. Does it resemble the Lotka-Volterra model?
+
+```{julia}
+
+```
